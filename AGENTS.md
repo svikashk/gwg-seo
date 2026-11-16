@@ -10,8 +10,8 @@ respect robots rules, and keep credentials out of site requests. Report
 incomplete evidence explicitly. Only claim a capability when it works and has
 behavioral verification. Maintain one implementation for CLI, library, and MCP.
 
-Keep the package and GitHub repository private until the owner approves the
-completed replacement. Never link this development checkout over a user's
-global command. Before committing, run npm run check and npm run test:install.
+The owner approved public release of the completed replacement on 2026-11-16.
+Never link this development checkout over a user's global command.
+Before committing, run npm run check and npm run test:install.
 Use temporary directories and local HTTP fixtures for tests. Do not modify
 real client configuration, profiles, or credentials in tests.

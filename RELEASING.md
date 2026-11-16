@@ -1,7 +1,11 @@
 # Release procedure
 
-The current package has `private: true`, and the repository is private. There is
-no publishing workflow. Preparing an archive does not make it public.
+Public releases are published manually from a verified archive. There is no
+publishing workflow. Preparing an archive does not make it public.
+
+The owner approved the initial 0.1.0 public release on 2026-11-16. Google
+integrations are explicitly marked as a preview without live-account validation.
+Local checks cover Node 22.19.0 and 26.8.1; GitHub-hosted CI was unable to start.
 
 1. Review the replacement's implementation, evidence limits, license, README,
    privacy policy, and packed files. Run a live Google account and property smoke
@@ -26,8 +30,9 @@ no publishing workflow. Preparing an archive does not make it public.
    Complete any account authentication or 2FA prompts locally. Do not publish a
    directory that may have changed after validation.
 7. Fetch `npm view @getwickedgrowth/seo@<version> dist.integrity` and compare it
-   with the prepared manifest. Install that exact registry version into a fresh
-   directory and check the CLI, library imports, MCP handshake, and skill files.
+   with the prepared manifest. Run `npm run test:registry` from the release
+   checkout to install that exact registry version into a fresh directory and
+   check the CLI, library imports, MCP handshake, and skill files.
    Create the matching Git tag and GitHub release only after registry verification.
 8. Restore the public installation page only with commands that work against the
    verified registry release. A GitHub source release alone is not an npm release.

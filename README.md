@@ -4,10 +4,28 @@ Local website audits and search reports for the terminal, Node.js applications,
 and agents with an MCP client. Reports separate observations from recommendations
 and include the limits of the acquired evidence.
 
-This development version is private and is not available from the npm registry.
 Requires Node.js 22.19 or newer. Website reports need no account or API key.
 
-## Install the private build
+## Install
+
+Install in the project where you want to use the CLI, library, or MCP server:
+
+```sh
+npm install @getwickedgrowth/seo@0.1.0
+npx --no-install gwg-seo --help
+npx --no-install gwg-seo audit https://www.example.com/
+```
+
+For an MCP client, run `npx --no-install gwg-seo mcp config` from that project.
+It prints the configuration for this installed copy. The package is local stdio
+MCP, not a hosted URL. See the MCP section below for tools and agent setup.
+
+For a global terminal command, use `npm install --global @getwickedgrowth/seo@0.1.0`.
+The package supplies `gwg-seo` and `seo`. If another package owns either command,
+use the project-local installation. Do not force an overwrite. Nothing in the
+package automatically edits your agent configuration or installs a global link.
+
+## Build from source
 
 From this repository:
 
@@ -25,14 +43,6 @@ npm install /absolute/path/to/getwickedgrowth-seo-0.1.0.tgz
 npx --no-install gwg-seo --help
 npx --no-install gwg-seo audit https://www.example.com/
 ```
-
-For a global terminal command, use `npm install --global /absolute/path/to/the.tgz`.
-The package supplies `gwg-seo` and `seo`. If another package owns either command,
-use the project-local installation. Do not force an overwrite. Nothing in the
-package automatically edits your agent configuration or installs a global link.
-
-After public release, the equivalent install will be
-`npm install @getwickedgrowth/seo`. That command is not available yet.
 
 ## Terminal use
 
@@ -87,6 +97,11 @@ Use `reports describe <id>` for the exact input schema. `reports run <id>
 --params '<json>'` supports every declared input. Unknown properties are rejected.
 
 ## Google data
+
+Google integrations are a preview in 0.1.0. Automated fixtures verify requests,
+pagination, errors, and OAuth callback handling; a live Google-account smoke test
+has not been completed for this release. Verify access against your own property
+before relying on these reports.
 
 Bring your own Google identity. There is no shared application credential or
 hosted callback service.

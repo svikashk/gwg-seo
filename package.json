@@ -2,7 +2,6 @@
   "name": "@getwickedgrowth/seo",
   "version": "0.1.0",
   "description": "Local website audits and search reports for people, agents, and Node.js applications.",
-  "private": true,
   "type": "module",
   "license": "Apache-2.0",
   "author": "Get Wicked Growth",
@@ -48,6 +47,7 @@
     "check": "npm run typecheck && npm test && npm run lint && npm audit --audit-level=low",
     "prepack": "npm run build",
     "test:install": "node scripts/install-check.mjs",
+    "test:registry": "node scripts/install-check.mjs --registry",
     "release:prepare": "node scripts/prepare-release.mjs"
   },
   "dependencies": {

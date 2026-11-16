@@ -17,6 +17,11 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 
 const exec = promisify(execFile),
   root = dirname(dirname(fileURLToPath(import.meta.url)))
+const fromRegistry = process.argv.includes('--registry')
+assert(
+  process.argv.slice(2).every((arg) => arg === '--registry'),
+  'Unknown option',
+)
 const temp = await mkdtemp(join(tmpdir(), 'gwg-install-')),
   consumer = join(temp, 'consumer')
 const env = {
@@ -40,6 +45,25 @@ try {
       ])
     ).stdout,
   )[0]
+  const registrySpec = `${packed.name}@${packed.version}`
+  if (fromRegistry) {
+    const integrity = JSON.parse(
+      (
+        await run('npm', [
+          'view',
+          registrySpec,
+          'dist.integrity',
+          '--json',
+          '--registry=https://registry.npmjs.org',
+        ])
+      ).stdout,
+    )
+    assert.equal(
+      integrity,
+      packed.integrity,
+      'Published archive differs from this checkout',
+    )
+  }
   const names = packed.files.map((f) => f.path)
   for (const path of names)
     assert(
@@ -75,7 +99,8 @@ try {
       '--ignore-scripts',
       '--no-audit',
       '--no-fund',
-      join(temp, packed.filename),
+      fromRegistry ? registrySpec : join(temp, packed.filename),
+      '--registry=https://registry.npmjs.org',
     ],
     consumer,
   )
@@ -163,7 +188,7 @@ try {
     await client.close()
   }
   console.log(
-    `Packed install verified: ${packed.filename}; CLI, library, TypeScript, MCP, and skill work outside the checkout.`,
+    `${fromRegistry ? 'Registry' : 'Packed'} install verified: ${packed.filename}; CLI, library, TypeScript, MCP, and skill work outside the checkout.`,
   )
 } finally {
   await rm(temp, { recursive: true, force: true })
