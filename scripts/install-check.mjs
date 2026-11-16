@@ -12,6 +12,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
+import { gunzipSync } from 'node:zlib'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 
@@ -58,11 +59,45 @@ try {
         ])
       ).stdout,
     )
+    const registryDirectory = join(temp, 'registry')
+    await mkdir(registryDirectory)
+    const downloaded = JSON.parse(
+      (
+        await run('npm', [
+          'pack',
+          registrySpec,
+          '--ignore-scripts',
+          '--json',
+          '--pack-destination',
+          registryDirectory,
+          '--registry=https://registry.npmjs.org',
+        ])
+      ).stdout,
+    )[0]
     assert.equal(
+      downloaded.integrity,
       integrity,
-      packed.integrity,
-      'Published archive differs from this checkout',
+      'Downloaded registry integrity mismatch',
     )
+    // Node versions can produce different gzip bytes for the same tar contents.
+    assert(
+      gunzipSync(
+        await readFile(join(registryDirectory, downloaded.filename)),
+      ).equals(gunzipSync(await readFile(join(temp, packed.filename)))),
+      'Published files differ from this checkout',
+    )
+    try {
+      const manifest = JSON.parse(
+        await readFile(join(root, 'release', `${packed.version}.json`), 'utf8'),
+      )
+      assert.equal(
+        integrity,
+        manifest.integrity,
+        'Published archive differs from the prepared release',
+      )
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error
+    }
   }
   const names = packed.files.map((f) => f.path)
   for (const path of names)
